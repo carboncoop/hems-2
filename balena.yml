@@ -12,4 +12,4 @@ data:
   supportedDeviceTypes:
     - raspberrypi4-64
     - raspberrypi5
-version: 25.4.0
+version: 25.8.0
