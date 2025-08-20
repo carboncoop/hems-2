@@ -14,6 +14,15 @@ This version of the HEMS has been built from experience of previous systems. In 
 # HEMS System, Services and functionality
 ![Diagram showing each service running on the Balena OS and a description of its functionality.](https://cc-site-media.s3.amazonaws.com/uploads/2024/05/HEMS-services-diagram.png)
 
+# Home Assistant and supporting containers.
+
+* [**Home Assistant**](https://www.home-assistant.io/) - tracks the final version of the previous months release for stability.
+* [**MQTT**](https://mosquitto.org/) - Mosquitto MQTT broker.
+* [**InfluxDB**](https://www.influxdata.com/) - a comprehensive time-series database. We are using the 2.x branch in order to utilise the edge replication functionality to influxcloud, which brings the advantage of automated gathering of device load information, feed loss tracking and local caching (for later replication). 
+* [**NGINX reverse proxy**](https://www.nginx.com/) - responsible for routing traffic when connecting remotely
+* [**Hass configurator**](https://github.com/danielperna84/hass-configurator) - a tool for editing Home Assistant configuration
+* [**Wifi repeater**](https://github.com/balena-labs-projects/wifi-repeater) - a tool for creating a wifi hotspot for device to connect to
+* [**System manager**](https://gitlab.com/carboncoop/hems-2/-/tree/main/services/system-manager?ref_type=heads) - a container to handle system configuration and monitoring
 
 ## Software setup
 
@@ -26,33 +35,54 @@ We recommend this button as the de-facto method for deploying new apps on balena
 ### First login
 To access your new Home Assistant instance, ensure you are on the same network as the device and browse to the IP address of your device (which you can find on your balenaCloud dashboard). Go through the Home Assistant setup process and establish a username and password. To obtain a secure public URL for your Home Assistant instance, simply click the "Public Device URL" switch on your balenaCloud dashboard. You'll then see a link to access your unique device URL.
 
-## File Locations
+### MQTT Broker use
+The MQTT container provides a local open-acess broker (which is distinct from any Home Assistant integration). You can use this broker to connect local devices and add it to HA.
 
-The project's docker-compose file creates persistent volumes on your disk/SD card for storing configuration and data. In particular, the entire Home Assistant configuration is persistently stored in a volume mapped to location `/config`.
+The access point is `mqtt://$your-local-ip:1883`. There is no credential needed.
+
+### InfluxDB use
+The InfluxDB container provides a dedicated timeseries database. It is not yet configured automatically, however this is important for caching of data, because Home Assistant keeps limited history. Here are a few steps to setup the local influx storage:
+1. From the balena console, run this command on the InfluxDB container (with freely chosen new credentials): 
+```
+influx setup \
+  --org hems \
+  --bucket home_assistant \
+  --username <USERNAME> \
+  --password <PASSWORD> \
+  --force
+```
+2. Find the bucket_id of the bucket you just created, with `influx bucket list`
+3. Create authentication for HomeAssistant to write to the local influx, with
+ `influx auth create --write-bucket <BUCKET_ID> --write-remotes --write-replications`
+with the <BUCKET_ID> you just read. 
+4. This command will give you an _API token_. Set it in a new environment variable (in the balena console) with the name : INFLUX_TOKEN.
+5. Righ upon reload, Home Assistant will start reporting to the local influx database :slight_smile:
+
+
+To test if you have data in influx, you can use this command in the influxdb container:
+```
+influx query 'from(bucket: "home_assistant") |> range(start: -1h)'
+```
+## File Locations
+The project's _docker-compose_ file creates persistent volumes on your disk/SD card for storing configuration and data. In particular, the entire Home Assistant configuration is persistently stored in a volume mapped to location `/config`.
 
 ## Configuring Home Assistant
-Generally we recommend UI configuration from the Home Assistant standard UI, but if you have particular requirements that mean you need to edit yaml files a text editor called Hass-Configurator is available locally on port 3218. (To access this while on the same network as your device go to http://%your-ip-address%:3218). Using this editor, you can make changes to the Home Assistant configuration file `configuration.yaml` which is the in the default folder `hass-config` for Hass-Configurator. (`hass-config` is mapped to `/config`)
+Generally we recommend UI configuration from the Home Assistant standard UI, but if you have particular requirements that mean you need to edit `yaml` files, a text editor called _Hass-Configurator_ is available locally on port `3218`. (To access this while on the same network as your device go to http://%your-ip-address%:3218).
 
-In order to access the configurator remotely, navigate to `https://<BALENA_URL>/configurator`. Note that this page is password protected. In order to set the user and password, create Balena variables `CONFIG_USER` AND `CONFIG_PASSWORD`.
+ Using this editor, you can make changes to the Home Assistant configuration file `configuration.yaml` which is the in the default folder `hass-config` for Hass-Configurator. (`hass-config` is mapped to `/config`)
 
-# Home Assistant and supporting containers.
+In order to access the configurator remotely, navigate to `https://<BALENA_URL>/configurator`. Note that this page is password protected. In order to set the user and password, create Balena variables `CONFIG_USER` and `CONFIG_PASSWORD`.
 
-* [**Home Assistant**](https://www.home-assistant.io/) - tracks the final version of the previous months release for stablity.
-* [**MQTT**](https://mosquitto.org/) - Mosquitto MQTT broker.
-* [**InfluxDB**](https://www.influxdata.com/) - a comprehensive time-series database. We are using the 2.x branch in order to utilise the edge replication functionality to influxcloud, which brings the advantage of automated gathering of device load information, feed loss tracking and local caching (for later replication). 
-* [**WiFi repeater**](https://github.com/balena-labs-projects/wifi-repeater) - a balena labs project to add a wifi access point to balena installations.
-* [**NGINX reverse proxy**](https://www.nginx.com/) - responsible for routing traffic when connecting remotely
-* [**Hass configurator**](https://github.com/danielperna84/hass-configurator) - a tool for editing Home Assistant configuration
-* [**Wifi pepeater**](https://github.com/balena-labs-projects/wifi-repeater) - a tool for creating a wifi hotspot for device to connect to
-* [**System manager**](https://gitlab.com/carboncoop/hems-2/-/tree/main/services/system-manager?ref_type=heads) - a container to handle system configuration and monitoring
 
-# Managing Community Custom Components
+# Managing Home Assistant Community Custom Components
 
-* **Community components** - The Home Assistant Community Store comes pre-installed on the HEMS 2 and provides much simpler installation and most importantly management of updates for custom components. Moving away from fleet wide deployment of custom components will free us up in terms of what devices we can support. We have already installed HACS on the ABS test fleet boxes and it's working very well.
+* **Community components** - The Home Assistant Community Store comes pre-installed on the HEMS 2 and provides much simpler installation, and most importantly management of updates for custom components. Moving away from fleet-wide deployment of custom components will free us up in terms of what devices we can support. We have already installed HACS on the ABS test fleet boxes and it's working very well.
 
 # Wifi hotspot
 
-The Wifi Repeater service sets up a wireless access point on the device when it boots. This can be used to connect devices in the home to the HEMS without relying on the home network. Note, this hotspot comes with default credentials
+The Wifi Repeater service sets up a wireless access point on the device when it boots. This can be used to connect devices in the home to the HEMS without relying on the home network. 
+
+:warning: Note: this hotspot comes with default credentials
 
 | Env var | Description | Default |
 | ------------- | ------------- | ------------- |
