@@ -40,9 +40,11 @@ The MQTT container provides a local open-acess broker (which is distinct from an
 
 The access point is `mqtt://$your-local-ip:1883`. There is no credential needed.
 
+The MQTT broker within the internal HEMS network has hostname "mqtt". In order to use MQTT within Home Assistant, add the MQTT integration and set broker hostname or IP to "mqtt".
+
 ### InfluxDB use
-The InfluxDB container provides a dedicated timeseries database. It is not yet configured automatically, however this is important for caching of data, because Home Assistant keeps limited history. Here are a few steps to setup the local influx storage:
-1. From the balena console, run this command on the InfluxDB container (with freely chosen new credentials): 
+The InfluxDB container provides a dedicated timeseries database. It is not configured automatically, however this is important for caching of data because Home Assistant keeps limited history. Here are a few steps to setup the local influx storage:
+1. From the balena console, run this command in the InfluxDB container (with freely chosen new credentials): 
 ```
 influx setup \
   --org hems \
@@ -56,7 +58,7 @@ influx setup \
  `influx auth create --write-bucket <BUCKET_ID> --write-remotes --write-replications`
 with the <BUCKET_ID> you just read. 
 4. This command will give you an _API token_. Set it in a new environment variable (in the balena console) with the name : INFLUX_TOKEN.
-5. Righ upon reload, Home Assistant will start reporting to the local influx database :slight_smile:
+5. Upon reload, Home Assistant will start reporting to the local influx database :slight_smile:
 
 
 To test if you have data in influx, you can use this command in the influxdb container:
@@ -76,7 +78,9 @@ In order to access the configurator remotely, navigate to `https://<BALENA_URL>/
 
 # Managing Home Assistant Community Custom Components
 
-* **Community components** - The Home Assistant Community Store comes pre-installed on the HEMS 2 and provides much simpler installation, and most importantly management of updates for custom components. Moving away from fleet-wide deployment of custom components will free us up in terms of what devices we can support. We have already installed HACS on the ABS test fleet boxes and it's working very well.
+**Community components** - The Home Assistant Community Store comes pre-installed on the HEMS 2 and provides much simpler installation, and most importantly management of updates for custom components. Moving away from fleet-wide deployment of custom components will free us up in terms of what devices we can support. We have already installed HACS on the ABS test fleet boxes and it's working very well.
+
+While HACS is installed for the procurement of custom components, it requires setting up. To do this, add HACS as an integration under Devices and services. Read and select all checkboxes to continue. HACS will require validation through GitHub in order to function. Follow the procedure to validate HACS using a suitable account.
 
 # Wifi hotspot
 
@@ -100,5 +104,5 @@ To change these credentials, set the environment variables `AP_SSID` and `AP_PAS
 
 * Raspberry Pi 4B - 2GB or more
 * 64GB Micro-SD Card (with wear levelling)
-* Power supply and cable
+* Official RPi power supply and cable
 * Optional: For connecting Zigbee devices - [SONOFF 3.0 dongle plus](https://sonoff.tech/product/gateway-and-sensors/sonoff-zigbee-3-0-usb-dongle-plus-e/) or [HA Skyconnect](https://www.home-assistant.io/skyconnect/) - for future MATTER compatibility (note: multi-protocol support is only available currently in HA OS version).
