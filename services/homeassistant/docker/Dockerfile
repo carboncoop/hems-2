@@ -1,4 +1,4 @@
-FROM homeassistant/home-assistant:2025.8
+FROM homeassistant/home-assistant:2026.2
 
 COPY docker/start.sh /tmp/start.sh
 

@@ -1,4 +1,5 @@
 """Class for appdaemon apps in HACS."""
+
 from __future__ import annotations
 
 from typing import TYPE_CHECKING
@@ -40,7 +41,7 @@ class HacsAppdaemonRepository(HacsRepository):
             addir = await self.repository_object.get_contents("apps", self.ref)
         except AIOGitHubAPIException:
             raise HacsException(
-                f"{self.string} Repository structure for {self.ref.replace('tags/','')} is not compliant"
+                f"{self.string} Repository structure for {self.ref.replace('tags/', '')} is not compliant"
             ) from None
 
         if not isinstance(addir, list):
@@ -79,7 +80,7 @@ class HacsAppdaemonRepository(HacsRepository):
         # Set local path
         self.content.path.local = self.localpath
 
-        # Signal entities to refresh
+        # Signal frontend to refresh
         if self.data.installed:
             self.hacs.async_dispatch(
                 HacsDispatchEvent.REPOSITORY,

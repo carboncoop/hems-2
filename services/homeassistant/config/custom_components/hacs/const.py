@@ -1,4 +1,5 @@
 """Constants for HACS"""
+
 from typing import TypeVar
 
 from aiogithubapi.common.const import ACCEPT_HEADERS
@@ -6,7 +7,7 @@ from aiogithubapi.common.const import ACCEPT_HEADERS
 NAME_SHORT = "HACS"
 DOMAIN = "hacs"
 CLIENT_ID = "395a8e669c5de9f7c6e8"
-MINIMUM_HA_VERSION = "2023.6.0"
+MINIMUM_HA_VERSION = "0.0.0"
 
 URL_BASE = "/hacsfiles"
 
@@ -28,17 +29,6 @@ VERSION_STORAGE = "6"
 STORENAME = "hacs"
 
 HACS_SYSTEM_ID = "0717a0cd-745c-48fd-9b16-c8534c9704f9-bc944b0f-fd42-4a58-a072-ade38d1444cd"
-
-STARTUP = """
--------------------------------------------------------------------
-HACS (Home Assistant Community Store)
-
-Version: %s
-This is a custom integration
-If you have any issues with this you need to open an issue here:
-https://github.com/hacs/integration/issues
--------------------------------------------------------------------
-"""
 
 LOCALE = [
     "ALL",

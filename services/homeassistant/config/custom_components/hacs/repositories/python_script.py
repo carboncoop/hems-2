@@ -1,4 +1,5 @@
 """Class for python_scripts in HACS."""
+
 from __future__ import annotations
 
 from typing import TYPE_CHECKING
@@ -48,7 +49,7 @@ class HacsPythonScriptRepository(HacsRepository):
                 break
         if not compliant:
             raise HacsException(
-                f"{self.string} Repository structure for {self.ref.replace('tags/','')} is not compliant"
+                f"{self.string} Repository structure for {self.ref.replace('tags/', '')} is not compliant"
             )
 
         # Handle potential errors
@@ -83,13 +84,13 @@ class HacsPythonScriptRepository(HacsRepository):
                 break
         if not compliant:
             raise HacsException(
-                f"{self.string} Repository structure for {self.ref.replace('tags/','')} is not compliant"
+                f"{self.string} Repository structure for {self.ref.replace('tags/', '')} is not compliant"
             )
 
         # Update name
         self.update_filenames()
 
-        # Signal entities to refresh
+        # Signal frontend to refresh
         if self.data.installed:
             self.hacs.async_dispatch(
                 HacsDispatchEvent.REPOSITORY,
