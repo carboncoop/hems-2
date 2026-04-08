@@ -51,7 +51,7 @@ export const createAccessPoint = async (device: WirelessNetwork): Promise<any> =
       ['802-11-wireless-security', [
         ['key-mgmt', ['s', 'wpa-psk']],
         ['psk', ['s', device.password]],
-        ['pairwise', ['s', 'ccmp']],
+        ['pairwise', ['as', 'ccmp']],
         ['proto', ['s', 'rsn']],
       ]],
       ['ipv4', [
