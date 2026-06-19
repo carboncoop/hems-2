@@ -21,14 +21,14 @@ This version of the HEMS has been built from experience of previous systems. In 
 * [**InfluxDB**](https://www.influxdata.com/) - a comprehensive time-series database. We are using the 2.x branch in order to utilise the edge replication functionality to influxcloud, which brings the advantage of automated gathering of device load information, feed loss tracking and local caching (for later replication). 
 * [**NGINX reverse proxy**](https://www.nginx.com/) - responsible for routing traffic when connecting remotely
 * [**Hass configurator**](https://github.com/danielperna84/hass-configurator) - a tool for editing Home Assistant configuration
-* [**Wifi repeater**](https://github.com/balena-labs-projects/wifi-repeater) - a tool for creating a wifi hotspot for device to connect to
-* [**System manager**](https://gitlab.com/carboncoop/hems-2/-/tree/main/services/system-manager?ref_type=heads) - a container to handle system configuration and monitoring
+* [**Wifi repeater**](https://github.com/balena-labs-projects/wifi-repeater) - a tool for creating a wifi hotspot for devices to connect to
+* [**System manager**](https://github.com/carboncoop/hems-2/tree/main/services/system-manager) - a container to handle system configuration and monitoring
 
 ## Software setup
 
 Running this project is as simple as deploying it to a balenaCloud application, then downloading the OS image from the dashboard and flashing your SD card.
 
-[![balena deploy button](https://www.balena.io/deploy.svg)](https://dashboard.balena-cloud.com/deploy?repoUrl=https://github.com/carboncoop/hems-test)
+[![balena deploy button](https://www.balena.io/deploy.svg)](https://dashboard.balena-cloud.com/deploy?repoUrl=https://github.com/carboncoop/hems-2)
 
 We recommend this button as the de-facto method for deploying new apps on balenaCloud, especially if you are just getting started or want to test out the project. However, if you want to modify the docker-compose or tinker with the code, you'll need to clone this repo and use the [balenaCLI](https://github.com/balena-io/balena-cli) to push to your devices. This can be done later if you initially deploy using the button above. [Read more](https://www.balena.io/docs/learn/deploy/deployment/).
 
