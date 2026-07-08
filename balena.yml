@@ -6,7 +6,7 @@ assets:
   repository:
     type: blob.asset
     data:
-      url: 'https://gitlab.com/carboncoop/hems-2'
+      url: "https://gitlab.com/Energies-citoyennes-en-Pays-de-Vilaine/hems-2"
 data:
   defaultDeviceType: raspberrypi4-64
   supportedDeviceTypes:
