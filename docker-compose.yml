@@ -16,6 +16,8 @@ services:
       - 8123:8123
       - 6053:6053
     privileged: true
+    devices:
+      - /dev/ttyUSB0:/dev/ttyUSB0
     volumes:
       - 'hass-config:/config'
     restart: always

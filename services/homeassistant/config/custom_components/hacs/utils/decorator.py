@@ -1,9 +1,11 @@
 """HACS Decorators."""
+
 from __future__ import annotations
 
 import asyncio
+from collections.abc import Coroutine
 from functools import wraps
-from typing import TYPE_CHECKING, Any, Coroutine
+from typing import TYPE_CHECKING, Any
 
 from ..const import DEFAULT_CONCURRENT_BACKOFF_TIME, DEFAULT_CONCURRENT_TASKS
 
@@ -39,3 +41,25 @@ def concurrent(
         return wrapper
 
     return inner_function
+
+
+def return_none_on_exception(func):
+    """Decorator to return None on any exception, works for sync/async, methods/functions."""
+
+    @wraps(func)
+    def sync_wrapper(*args, **kwargs):
+        try:
+            return func(*args, **kwargs)
+        except Exception:  # pylint: disable=broad-except
+            return None
+
+    @wraps(func)
+    async def async_wrapper(*args, **kwargs):
+        try:
+            return await func(*args, **kwargs)
+        except Exception:  # pylint: disable=broad-except
+            return None
+
+    if asyncio.iscoroutinefunction(func):
+        return async_wrapper
+    return sync_wrapper
